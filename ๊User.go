@@ -15,6 +15,12 @@ type User struct {
 	Wallet   int    `json:"Wallet"`
 }
 
+type ResUser struct {
+	UserM  int    `json:"UserM"`
+	Name   string `json:"Name"`
+	Email  string `json:"Email"`
+	Wallet int    `json:"Wallet"`
+}
 type UserLogin struct {
 	Email    string `json:"Email"`
 	Password string `json:"Password"`
@@ -112,10 +118,15 @@ func LoginUser(c *fiber.Ctx) error {
 	}
 	// Verify the provided password against the hashed password
 	if CheckPassword(P.Password, p.Password) {
+		U := new(ResUser)
+		U.UserM = P.UserM
+		U.Name = P.Name
+		U.Email = P.Email
+		U.Wallet = P.Wallet
 		return c.JSON(fiber.Map{
 			"status":  "success",
 			"message": "Login successful",
-			"user":    P,
+			"user":    U,
 		})
 	} else {
 		return c.JSON("Invalid email or password")
