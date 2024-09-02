@@ -10,7 +10,7 @@ import (
 )
 
 type User struct {
-	UserM    int    `json:"user_id"`
+	UserM    int    `json:"UserM"`
 	Name     string `json:"Name"`
 	Email    string `json:"Email"`
 	Password string `json:"Password"`
@@ -50,7 +50,7 @@ func main() {
 }
 
 func GetUser(c *fiber.Ctx) error {
-	rows, err := db.Query(`SELECT UserM, Name, Email, Password FROM UserM`)
+	rows, err := db.Query(`SELECT UserM, Name, Email, Password , Wallet FROM UserM`)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
