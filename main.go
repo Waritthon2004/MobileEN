@@ -14,6 +14,7 @@ type User struct {
 	Name     string `json:"Name"`
 	Email    string `json:"Email"`
 	Password string `json:"Password"`
+	Wallet   int    `json:"Wallet"`
 }
 
 var db *sql.DB
@@ -58,7 +59,7 @@ func GetUser(c *fiber.Ctx) error {
 	var users []User
 	for rows.Next() {
 		var p User
-		err := rows.Scan(&p.UserM, &p.Name, &p.Email, &p.Password)
+		err := rows.Scan(&p.UserM, &p.Name, &p.Email, &p.Password, &p.Wallet)
 		if err != nil {
 			return c.Status(500).SendString(err.Error())
 		}
@@ -81,9 +82,9 @@ func PostUser(c *fiber.Ctx) error {
 		return err
 	}
 
-	query := `INSERT INTO UserM(Name, Email, Password) VALUES (?, ?, ?)`
+	query := `INSERT INTO UserM(Name, Email, Password, Wallet) VALUES (?, ?, ?,?)`
 
-	_, err := db.Exec(query, p.Name, p.Email, p.Password)
+	_, err := db.Exec(query, p.Name, p.Email, p.Password, p.Wallet)
 	if err != nil {
 		return err
 	}
