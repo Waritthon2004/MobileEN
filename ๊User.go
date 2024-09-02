@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
@@ -50,9 +51,15 @@ func PostUser(c *fiber.Ctx) error {
 	if err := c.BodyParser(p); err != nil {
 		return err
 	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(p.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
 	query := `INSERT INTO UserM(Name, Email, Password, Wallet) VALUES (?, ?, ?,?)`
 
-	result, err := db.Exec(query, p.Name, p.Email, p.Password, p.Wallet)
+	result, err := db.Exec(query, p.Name, p.Email, hashedPassword, p.Wallet)
 	if err != nil {
 		return err
 	}
@@ -61,7 +68,7 @@ func PostUser(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-
+	p.Password = string(hashedPassword)
 	p.UserM = int(id)
 
 	return c.JSON(p)
@@ -83,18 +90,17 @@ func UpdateUser(c *fiber.Ctx) error {
 
 	return c.JSON(p)
 }
-
 func LoginUser(c *fiber.Ctx) error {
-	// Parse the request body into the UserLogin struct
 	p := new(UserLogin)
 	if err := c.BodyParser(p); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid input")
 	}
 
+	// Query the database for the user by email
 	row := db.QueryRow(`SELECT UserM, Name, Email, Password, Wallet FROM UserM WHERE Email = ?`, p.Email)
 
+	// Create a User instance to hold the queried data
 	P := new(User)
-
 	err := row.Scan(&P.UserM, &P.Name, &P.Email, &P.Password, &P.Wallet)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -104,5 +110,19 @@ func LoginUser(c *fiber.Ctx) error {
 		// Handle other errors (e.g., database issues)
 		return fiber.NewError(fiber.StatusInternalServerError, "Database query error")
 	}
-	return c.JSON(P)
+	// Verify the provided password against the hashed password
+	if CheckPassword(P.Password, p.Password) {
+		return c.JSON(fiber.Map{
+			"status":  "success",
+			"message": "Login successful",
+			"user":    P,
+		})
+	} else {
+		return c.JSON("Invalid email or password")
+	}
+}
+
+func CheckPassword(hashedPassword, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return err == nil
 }

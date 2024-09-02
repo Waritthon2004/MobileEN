@@ -39,6 +39,9 @@ func main() {
 	app.Post("/user", PostUser)
 	app.Put("/user", UpdateUser)
 
+	//Lotto
+	app.Post("/lotto", PostLotto)
+	app.Delete("/lotto", DeleteLotto)
 	// Start the server
 	log.Fatal(app.Listen(":3000"))
 }
