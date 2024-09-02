@@ -33,7 +33,7 @@ func main() {
 	// Initialize Fiber app
 	app := fiber.New()
 
-	// Define a route
+	// User
 	app.Get("/user", GetUser)
 	app.Post("/user/login", LoginUser)
 	app.Post("/user", PostUser)

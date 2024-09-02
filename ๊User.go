@@ -68,24 +68,18 @@ func PostUser(c *fiber.Ctx) error {
 }
 
 func UpdateUser(c *fiber.Ctx) error {
-
+	//UserM, err := strconv.Atoi(c.Params("id"))
 	p := new(User)
+
 	if err := c.BodyParser(p); err != nil {
 		return err
 	}
 	query := `UPDATE UserM SET Name=?,Email=?,Password=?,Wallet=? WHERE UserM=?`
 
-	result, err := db.Exec(query, p.Name, p.Email, p.Password, p.Wallet, p.UserM)
+	_, err := db.Exec(query, p.Name, p.Email, p.Password, p.Wallet, p.UserM)
 	if err != nil {
 		return err
 	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		return err
-	}
-
-	p.UserM = int(id)
 
 	return c.JSON(p)
 }
@@ -110,6 +104,5 @@ func LoginUser(c *fiber.Ctx) error {
 		// Handle other errors (e.g., database issues)
 		return fiber.NewError(fiber.StatusInternalServerError, "Database query error")
 	}
-
 	return c.JSON(P)
 }
