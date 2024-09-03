@@ -76,8 +76,12 @@ func PostUser(c *fiber.Ctx) error {
 	}
 	p.Password = string(hashedPassword)
 	p.UserM = int(id)
+	P := new(ResUser)
+	P.Name = p.Name
+	P.Email = p.Email
+	P.Wallet = p.Wallet
 
-	return c.JSON(p)
+	return c.JSON(P)
 }
 
 func UpdateUser(c *fiber.Ctx) error {

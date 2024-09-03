@@ -40,6 +40,7 @@ func main() {
 	app.Put("/user", UpdateUser)
 
 	//Lotto
+	app.Get("/lotto", GetLotto)
 	app.Post("/lotto", PostLotto)
 	app.Delete("/lotto", DeleteLotto)
 	// Start the server
