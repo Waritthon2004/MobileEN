@@ -41,6 +41,8 @@ func main() {
 
 	//Lotto
 	app.Get("/lotto", GetLotto)
+	app.Get("/addreward", randomNumberLottoReward)
+	app.Get("/reward", getLottoReward)
 	app.Post("/lotto", PostLotto)
 	app.Delete("/lotto", DeleteLotto)
 
