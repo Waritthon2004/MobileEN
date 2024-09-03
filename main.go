@@ -43,6 +43,10 @@ func main() {
 	app.Get("/lotto", GetLotto)
 	app.Post("/lotto", PostLotto)
 	app.Delete("/lotto", DeleteLotto)
+
+	//Money
+	app.Put("/money", UpdateMoney)
+
 	// Start the server
 	log.Fatal(app.Listen(":3000"))
 }
