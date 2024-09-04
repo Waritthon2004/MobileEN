@@ -45,9 +45,11 @@ func main() {
 	app.Get("/reward", getLottoReward)
 	app.Post("/lotto", PostLotto)
 	app.Delete("/lotto", DeleteLotto)
+	app.Delete("/reward", DeleteReward)
+	app.Post("/buylotto", BuyLotto)
 
 	//Money
-	app.Put("/money", UpdateMoney)
+	app.Put("/money", BuyLotto)
 
 	// Start the server
 	log.Fatal(app.Listen(":3000"))

@@ -25,6 +25,12 @@ type Reward struct {
 	Reward int    `json:"Reward"`
 }
 
+type Buylotto struct {
+	Lid    int `json:"Lid"`
+	UserM  int `json:"UserM"`
+	Status int `json:"Status"`
+}
+
 func GetLotto(c *fiber.Ctx) error {
 	query := `SELECT Lid, Number, Period, Price FROM Lotto`
 	rows, err := db.Query(query)
@@ -176,4 +182,30 @@ func getLottoReward(c *fiber.Ctx) error {
 		"Reswards4": Reswards4,
 		"Reswards5": Reswards5,
 	})
+}
+
+func DeleteReward(c *fiber.Ctx) error {
+
+	query := `DELETE FROM Reward`
+	_, err := db.Exec(query)
+	if err != nil {
+		return err
+	}
+
+	return c.SendStatus(fiber.StatusOK)
+}
+
+func BuyLotto(c *fiber.Ctx) error {
+	p := new(Buylotto)
+	if err := c.BodyParser(p); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid input")
+	}
+	query := `INSERT INTO basketlotto(Lid,UserM, Status) VALUES (?,?,?)`
+	_, err := db.Exec(query, p.Lid, p.UserM, p.Status)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON("Status : Ok")
+
 }
