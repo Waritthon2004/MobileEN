@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -211,12 +213,46 @@ func BuyLotto(c *fiber.Ctx) error {
 }
 
 func getBasketLotto(c *fiber.Ctx) error {
+	userid, _ := strconv.Atoi(c.Params("id"))
 	query := `SELECT basketlotto.Lid , Lotto.Number , Lotto.Period , Lotto.Price
 			FROM basketlotto, Lotto, UserM
 			WHERE basketlotto.Lid = Lotto.Lid
 			AND basketlotto.UserM = UserM.UserM
-			and basketlotto.UserM = ?;`
-	rows, err := db.Query(query)
+			and basketlotto.UserM = ?`
+	rows, err := db.Query(query, userid)
+	if err != nil {
+		return err
+	}
+	var Lottos []Lotto
+	for rows.Next() {
+		var p Lotto
+		err := rows.Scan(&p.Lid, &p.Number, &p.Period, &p.Price)
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+		Lottos = append(Lottos, p)
+	}
+
+	// Check for errors from iterating over rows
+	if err = rows.Err(); err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	// Send JSON response
+	return c.JSON(Lottos)
+
+}
+
+func getSerachLotto(c *fiber.Ctx) error {
+	Lottonumber, _ := strconv.Atoi(c.Params("id"))
+	lottoStr := strconv.Itoa(Lottonumber) // แปลงตัวเลขกลับเป็นสตริง
+	length := len(lottoStr)               // หาจำนวนตัวอักษร
+	fmt.Println("Lottonumber:", Lottonumber)
+	fmt.Println("Length of Lottonumber:", length)
+
+	query := `SELECT Lid, Number, Period, PriceFROM Lotto WHERE Number LIKE "?%"`
+
+	rows, err := db.Query(query, Lottonumber)
 	if err != nil {
 		return err
 	}
