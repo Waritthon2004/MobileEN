@@ -35,6 +35,7 @@ func main() {
 
 	// User
 	app.Get("/user", GetUser)
+	app.Get("/user/:id", GetUserByid)
 	app.Post("/user/login", LoginUser)
 	app.Post("/user", PostUser)
 	app.Put("/user", UpdateUser)

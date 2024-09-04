@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
@@ -49,6 +50,18 @@ func GetUser(c *fiber.Ctx) error {
 
 	// Send JSON response
 	return c.JSON(users)
+}
+func GetUserByid(c *fiber.Ctx) error {
+	userid, _ := strconv.Atoi(c.Params("id"))
+	rows := db.QueryRow(`SELECT UserM, Name, Email , Wallet FROM UserM where UserM = ?`, userid)
+
+	var p ResUser
+	err := rows.Scan(&p.UserM, &p.Name, &p.Email, &p.Wallet)
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	return c.JSON(p)
 }
 
 func PostUser(c *fiber.Ctx) error {

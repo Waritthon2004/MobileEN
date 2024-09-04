@@ -209,3 +209,33 @@ func BuyLotto(c *fiber.Ctx) error {
 	return c.JSON("Status : Ok")
 
 }
+
+func getBasketLotto(c *fiber.Ctx) error {
+	query := `SELECT basketlotto.Lid , Lotto.Number , Lotto.Period , Lotto.Price
+			FROM basketlotto, Lotto, UserM
+			WHERE basketlotto.Lid = Lotto.Lid
+			AND basketlotto.UserM = UserM.UserM
+			and basketlotto.UserM = ?;`
+	rows, err := db.Query(query)
+	if err != nil {
+		return err
+	}
+	var Lottos []Lotto
+	for rows.Next() {
+		var p Lotto
+		err := rows.Scan(&p.Lid, &p.Number, &p.Period, &p.Price)
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+		Lottos = append(Lottos, p)
+	}
+
+	// Check for errors from iterating over rows
+	if err = rows.Err(); err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	// Send JSON response
+	return c.JSON(Lottos)
+
+}
