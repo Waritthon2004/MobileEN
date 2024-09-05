@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 	"strconv"
 	"time"
@@ -244,18 +243,24 @@ func getBasketLotto(c *fiber.Ctx) error {
 }
 
 func getSerachLotto(c *fiber.Ctx) error {
-	Lottonumber, _ := strconv.Atoi(c.Params("id"))
-	lottoStr := strconv.Itoa(Lottonumber) // แปลงตัวเลขกลับเป็นสตริง
-	length := len(lottoStr)               // หาจำนวนตัวอักษร
-	fmt.Println("Lottonumber:", Lottonumber)
-	fmt.Println("Length of Lottonumber:", length)
-
-	query := `SELECT Lid, Number, Period, PriceFROM Lotto WHERE Number LIKE "?%"`
-
-	rows, err := db.Query(query, Lottonumber)
-	if err != nil {
-		return err
+	// รับพารามิเตอร์ id ที่เป็นเลขล็อตเตอรี่
+	Lottonumber := c.Params("id")
+	if Lottonumber == "" {
+		return c.Status(400).SendString("Invalid lottery number")
 	}
+
+	// ใช้คำสั่ง SQL สำหรับค้นหาหมายเลขล็อตเตอรี่ที่ขึ้นต้นด้วยพารามิเตอร์ id
+	query := `SELECT Lid, Number, Period, Price FROM Lotto WHERE Number LIKE ?`
+	searchPattern := Lottonumber + "%"
+
+	// รันคำสั่ง SQL พร้อมพารามิเตอร์ค้นหา
+	rows, err := db.Query(query, searchPattern)
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+	defer rows.Close()
+
+	// เก็บข้อมูลล็อตเตอรี่
 	var Lottos []Lotto
 	for rows.Next() {
 		var p Lotto
@@ -266,12 +271,11 @@ func getSerachLotto(c *fiber.Ctx) error {
 		Lottos = append(Lottos, p)
 	}
 
-	// Check for errors from iterating over rows
+	// ตรวจสอบข้อผิดพลาดจากการวนลูป rows
 	if err = rows.Err(); err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
 
-	// Send JSON response
+	// ส่งผลลัพธ์กลับเป็น JSON
 	return c.JSON(Lottos)
-
 }
