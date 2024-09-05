@@ -15,7 +15,11 @@ type User struct {
 	Password string `json:"Password"`
 	Wallet   int    `json:"Wallet"`
 }
-
+type UserUpdate struct {
+	UserM int    `json:"UserM"`
+	Name  string `json:"Name"`
+	Email string `json:"Email"`
+}
 type ResUser struct {
 	UserM  int    `json:"UserM"`
 	Name   string `json:"Name"`
@@ -99,20 +103,21 @@ func PostUser(c *fiber.Ctx) error {
 
 func UpdateUser(c *fiber.Ctx) error {
 	//UserM, err := strconv.Atoi(c.Params("id"))
-	p := new(User)
+	p := new(UserUpdate)
 
 	if err := c.BodyParser(p); err != nil {
 		return err
 	}
-	query := `UPDATE UserM SET Name=?,Email=?,Password=?,Wallet=? WHERE UserM=?`
+	query := `UPDATE UserM SET Name=?,Email=? WHERE UserM=?`
 
-	_, err := db.Exec(query, p.Name, p.Email, p.Password, p.Wallet, p.UserM)
+	_, err := db.Exec(query, p.Name, p.Email, p.UserM)
 	if err != nil {
 		return err
 	}
 
 	return c.JSON(p)
 }
+
 func LoginUser(c *fiber.Ctx) error {
 	p := new(UserLogin)
 	if err := c.BodyParser(p); err != nil {
