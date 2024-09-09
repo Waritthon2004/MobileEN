@@ -96,7 +96,7 @@ func PostUser(c *fiber.Ctx) error {
 		return err
 	}
 
-	query := `INSERT INTO UserM(Name, Email, Password, Wallet) VALUES (?, ?, ?,?)`
+	query := `INSERT INTO UserM(Name, Email, Password, Wallet,Type) VALUES (?, ?, ?,?,0)`
 
 	result, err := db.Exec(query, p.Name, p.Email, hashedPassword, p.Wallet)
 	if err != nil {
