@@ -217,7 +217,8 @@ func getBasketLotto(c *fiber.Ctx) error {
 			FROM basketlotto, Lotto, UserM
 			WHERE basketlotto.Lid = Lotto.Lid
 			AND basketlotto.UserM = UserM.UserM
-			and basketlotto.UserM = ?`
+			and basketlotto.UserM = ? 
+			and basketlotto.Status = 0`
 	rows, err := db.Query(query, userid)
 	if err != nil {
 		return err
