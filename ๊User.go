@@ -15,6 +15,22 @@ type User struct {
 	Password string `json:"Password"`
 	Wallet   int    `json:"Wallet"`
 }
+
+type Postuserall struct {
+	UserM    int    `json:"UserM"`
+	Name     string `json:"Name"`
+	Email    string `json:"Email"`
+	Password string `json:"Password"`
+	Wallet   int    `json:"Wallet"`
+	Type     int    `json:"Type"`
+}
+type Resuserall struct {
+	UserM  int    `json:"UserM"`
+	Name   string `json:"Name"`
+	Email  string `json:"Email"`
+	Wallet int    `json:"Wallet"`
+	Type   int    `json:"Type"`
+}
 type UserUpdate struct {
 	UserM int    `json:"UserM"`
 	Name  string `json:"Name"`
@@ -125,11 +141,10 @@ func LoginUser(c *fiber.Ctx) error {
 	}
 
 	// Query the database for the user by email
-	row := db.QueryRow(`SELECT UserM, Name, Email, Password, Wallet FROM UserM WHERE Email = ?`, p.Email)
-
+	row := db.QueryRow(`SELECT UserM, Name, Email, Password, Wallet , Type FROM UserM WHERE Email = ?`, p.Email)
 	// Create a User instance to hold the queried data
-	P := new(User)
-	err := row.Scan(&P.UserM, &P.Name, &P.Email, &P.Password, &P.Wallet)
+	P := new(Postuserall)
+	err := row.Scan(&P.UserM, &P.Name, &P.Email, &P.Password, &P.Wallet, &P.Type)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// Return an error if no user is found
@@ -140,11 +155,12 @@ func LoginUser(c *fiber.Ctx) error {
 	}
 	// Verify the provided password against the hashed password
 	if CheckPassword(P.Password, p.Password) {
-		U := new(ResUser)
+		U := new(Resuserall)
 		U.UserM = P.UserM
 		U.Name = P.Name
 		U.Email = P.Email
 		U.Wallet = P.Wallet
+		U.Type = P.Type
 		return c.JSON(fiber.Map{
 			"status":  "success",
 			"message": "Login successful",
