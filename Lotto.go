@@ -33,7 +33,7 @@ type Buylotto struct {
 }
 
 func GetLotto(c *fiber.Ctx) error {
-	query := `SELECT Lid, Number, Period, Price FROM Lotto`
+	query := `SELECT Lid, Number, Period, Price FROM Lotto where Status = 0`
 	rows, err := db.Query(query)
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func PostLotto(c *fiber.Ctx) error {
 
 	for i := 0; i < 100; i++ {
 		randomNumber := r.Intn(900000) + 100000
-		query := `INSERT INTO Lotto(Number, Period, Price) VALUES (?,?,?)`
+		query := `INSERT INTO Lotto(Number, Period, Price,Status) VALUES (?,?,?,0)`
 		_, err := db.Exec(query, randomNumber, 1, 80)
 		if err != nil {
 			return err

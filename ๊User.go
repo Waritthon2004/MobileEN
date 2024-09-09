@@ -171,6 +171,27 @@ func LoginUser(c *fiber.Ctx) error {
 	}
 }
 
+func Userbuylotto(c *fiber.Ctx) error {
+	//UserM, err := strconv.Atoi(c.Params("id"))
+	userid, _ := strconv.Atoi(c.Params("id"))
+
+	query := `UPDATE basketlotto,Lotto,UserM 
+SET 
+    basketlotto.Status = 1,
+    Lotto.Status = 1
+WHERE 
+    basketlotto.UserM = UserM.UserM          
+    AND basketlotto.Lid = Lotto.Lid
+    AND UserM.UserM = ?`
+
+	_, err := db.Exec(query, userid)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON("Ok")
+}
+
 func CheckPassword(hashedPassword, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	return err == nil
