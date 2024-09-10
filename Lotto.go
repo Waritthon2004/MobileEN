@@ -16,6 +16,13 @@ type Lotto struct {
 	Price  int    `json:"Price"`
 }
 
+type GGLotto struct {
+	Bid    int    `json:"Bid"`
+	Lid    int    `json:"Lid"`
+	Number string `json:"Number"`
+	Period int    `json:"Period"`
+	Price  int    `json:"Price"`
+}
 type LottoReward struct {
 	Lid    int    `json:"Lid"`
 	Number string `json:"Number"`
@@ -35,15 +42,15 @@ type Buylotto struct {
 }
 
 func GetLotto(c *fiber.Ctx) error {
-	query := `SELECT Lid, Number, Period, Price FROM Lotto where Status = 0`
+	query := `SELECT Bid,Lid, Number, Period, Price FROM Lotto where Status = 0`
 	rows, err := db.Query(query)
 	if err != nil {
 		return err
 	}
-	var Lottos []Lotto
+	var Lottos []GGLotto
 	for rows.Next() {
-		var p Lotto
-		err := rows.Scan(&p.Lid, &p.Number, &p.Period, &p.Price)
+		var p GGLotto
+		err := rows.Scan(&p.Bid, &p.Lid, &p.Number, &p.Period, &p.Price)
 		if err != nil {
 			return c.Status(500).SendString(err.Error())
 		}
