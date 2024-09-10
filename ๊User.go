@@ -197,7 +197,7 @@ func CheckPassword(hashedPassword, password string) bool {
 	return err == nil
 }
 
-func GetUserLotto(c *fiber.Ctx) error {
+func PostUserLotto(c *fiber.Ctx) error {
 	userid, _ := strconv.Atoi(c.Params("id"))
 	query := `SELECT Lotto.Lid , Lotto.Number ,Lotto.Period,Lotto.Price FROM basketlotto,Lotto WHERE basketlotto.Lid = Lotto.Lid and UserM = ? and basketlotto.Status = 1`
 

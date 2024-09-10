@@ -84,6 +84,7 @@ func DeleteLotto(c *fiber.Ctx) error {
 
 	return c.SendStatus(fiber.StatusOK)
 }
+
 func randomNumberLottoReward(c *fiber.Ctx) error {
 	query := `SELECT Lid , Number FROM Lotto ORDER BY RAND() LIMIT 19`
 	rows, err := db.Query(query)
@@ -103,30 +104,30 @@ func randomNumberLottoReward(c *fiber.Ctx) error {
 
 	i := 0
 	for _, reward := range Reswards {
-		query := `INSERT INTO Reward(Number,Reward) VALUES (?,?)`
+		query := `INSERT INTO Reward(Number,Reward,Price) VALUES (?,?,?)`
 
 		if i == 0 {
-			_, err := db.Exec(query, reward.Number, 1)
+			_, err := db.Exec(query, reward.Number, 1, 6000000)
 			if err != nil {
 				return err
 			}
 		} else if i == 1 {
-			_, err := db.Exec(query, reward.Number, 2)
+			_, err := db.Exec(query, reward.Number, 2, 200000)
 			if err != nil {
 				return err
 			}
 		} else if i == 2 {
-			_, err := db.Exec(query, reward.Number, 3)
+			_, err := db.Exec(query, reward.Number, 3, 80000)
 			if err != nil {
 				return err
 			}
 		} else if i > 2 && i <= 10 {
-			_, err := db.Exec(query, reward.Number, 4)
+			_, err := db.Exec(query, reward.Number, 4, 40000)
 			if err != nil {
 				return err
 			}
 		} else {
-			_, err := db.Exec(query, reward.Number, 5)
+			_, err := db.Exec(query, reward.Number, 5, 20000)
 			if err != nil {
 				return err
 			}
