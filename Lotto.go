@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"math/rand"
 	"strconv"
 	"time"
@@ -24,6 +25,7 @@ type Reward struct {
 	LLid   int    `json:"LLid"`
 	Number string `json:"Number"`
 	Reward int    `json:"Reward"`
+	Price  int    `json:"Price"`
 }
 
 type Buylotto struct {
@@ -141,7 +143,7 @@ func randomNumberLottoReward(c *fiber.Ctx) error {
 }
 
 func getLottoReward(c *fiber.Ctx) error {
-	query := `SELECT LLid, Number, Reward FROM Reward `
+	query := `SELECT LLid, Number, Reward,Price FROM Reward `
 	rows, err := db.Query(query)
 	if err != nil {
 		return err
@@ -150,7 +152,7 @@ func getLottoReward(c *fiber.Ctx) error {
 
 	for rows.Next() {
 		var p Reward
-		err := rows.Scan(&p.LLid, &p.Number, &p.Reward)
+		err := rows.Scan(&p.LLid, &p.Number, &p.Reward, p.Price)
 		if err != nil {
 			return c.Status(500).SendString(err.Error())
 		}
@@ -281,19 +283,55 @@ func getSerachLotto(c *fiber.Ctx) error {
 	// ส่งผลลัพธ์กลับเป็น JSON
 	return c.JSON(Lottos)
 }
-
 func NumberOneReward(c *fiber.Ctx) error {
+	query := `SELECT LLid, Number, Reward, Price FROM Reward WHERE Reward = 1`
+	var x Reward
+
+	err := db.QueryRow(query).Scan(&x.LLid, &x.Number, &x.Reward, &x.Price)
+	if err != nil {
+		if err == sql.ErrNoRows {
+		} else {
+			return err
+		}
+	}
+
+	if x.LLid == 0 {
+		// Query to select a random Lotto entry that is not in Reward
+		query = `SELECT Lid, Number FROM Lotto WHERE Lid NOT IN (SELECT Lid FROM Reward) ORDER BY RAND() LIMIT 1;`
+		var p LottoReward
+
+		err = db.QueryRow(query).Scan(&p.Lid, &p.Number)
+		if err != nil {
+			return err
+		}
+
+		// Insert the new reward
+		query = `INSERT INTO Reward(Number, Reward, Price) VALUES (?, ?, ?)`
+		_, err = db.Exec(query, p.Lid, 1, 6000000)
+		if err != nil {
+			return err
+		}
+
+		// Return success status
+		return c.JSON(fiber.Map{"status": "ok"})
+	}
+
+	// If LLid is not 0, return a message indicating the reward exists
+	return c.JSON(fiber.Map{"status": "have reward"})
+}
+
+func NumberTwoReward(c *fiber.Ctx) error {
 	query := `SELECT Lid, Number FROM Lotto WHERE Lid NOT IN (SELECT Lid FROM Reward) ORDER BY RAND() LIMIT 1;
 `
 	row := db.QueryRow(query)
-	var p Lotto
+	var p LottoReward
 	err := row.Scan(&p.Lid, &p.Number)
 	if err != nil {
 		return err
 	} else {
 		query = `INSERT INTO Reward(Number,Reward,Price) VALUES (?,?,?)`
 
-		_, err = db.Exec(query, p.Lid, 1, 6000000)
+		_, err = db.Exec(query, p.Lid, 2, 200000)
 
 		if err != nil {
 			return err
@@ -302,4 +340,82 @@ func NumberOneReward(c *fiber.Ctx) error {
 		return c.JSON("Status : Ok")
 	}
 
+}
+
+func NumberThreeReward(c *fiber.Ctx) error {
+	query := `SELECT Lid, Number FROM Lotto WHERE Lid NOT IN (SELECT Lid FROM Reward) ORDER BY RAND() LIMIT 1;
+`
+	row := db.QueryRow(query)
+	var p LottoReward
+	err := row.Scan(&p.Lid, &p.Number)
+	if err != nil {
+		return err
+	} else {
+		query = `INSERT INTO Reward(Number,Reward,Price) VALUES (?,?,?)`
+
+		_, err = db.Exec(query, p.Lid, 3, 80000)
+
+		if err != nil {
+			return err
+		}
+
+		return c.JSON("Status : Ok")
+	}
+
+}
+
+func NumberFourReward(c *fiber.Ctx) error {
+	query := `SELECT Lid, Number FROM Lotto WHERE Lid NOT IN (SELECT Lid FROM Reward) ORDER BY RAND() LIMIT 8;`
+	rows, err := db.Query(query)
+	if err != nil {
+		return err
+	}
+	var Reswards []LottoReward
+
+	for rows.Next() {
+		var p LottoReward
+		err := rows.Scan(&p.Lid, &p.Number)
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+		Reswards = append(Reswards, p)
+	}
+
+	for _, reward := range Reswards {
+		query := `INSERT INTO Reward(Number,Reward,Price) VALUES (?,?,?)`
+		_, err := db.Exec(query, reward.Number, 4, 40000)
+		if err != nil {
+			return err
+		}
+
+	}
+	return c.JSON("Status : Ok")
+}
+
+func NumberFiveReward(c *fiber.Ctx) error {
+	query := `SELECT Lid, Number FROM Lotto WHERE Lid NOT IN (SELECT Lid FROM Reward) ORDER BY RAND() LIMIT 8;`
+	rows, err := db.Query(query)
+	if err != nil {
+		return err
+	}
+	var Reswards []LottoReward
+
+	for rows.Next() {
+		var p LottoReward
+		err := rows.Scan(&p.Lid, &p.Number)
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+		Reswards = append(Reswards, p)
+	}
+
+	for _, reward := range Reswards {
+		query := `INSERT INTO Reward(Number,Reward,Price) VALUES (?,?,?)`
+		_, err := db.Exec(query, reward.Number, 5, 20000)
+		if err != nil {
+			return err
+		}
+
+	}
+	return c.JSON("Status : Ok")
 }

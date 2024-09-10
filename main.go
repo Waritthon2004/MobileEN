@@ -44,7 +44,6 @@ func main() {
 
 	//Lotto
 	app.Get("/lotto", GetLotto)
-	app.Get("/addreward", randomNumberLottoReward)
 	app.Get("/reward", getLottoReward)
 	app.Post("/lotto", PostLotto)
 	app.Delete("/lotto", DeleteLotto)
@@ -52,6 +51,13 @@ func main() {
 	app.Post("/buylottobasket", BuyLotto)
 	app.Get("/basketlotto/:id", getBasketLotto)
 	app.Get("/search/:id", getSerachLotto)
+	app.Get("/addreward", randomNumberLottoReward)
+
+	app.Get("/addrewardOne", NumberOneReward)
+	app.Get("/addrewardTwo", NumberTwoReward)
+	app.Get("/addrewardThree", NumberThreeReward)
+	app.Get("/addrewardFour", NumberFourReward)
+	app.Get("/addrewardFive", NumberFiveReward)
 
 	//Money
 	app.Put("/money", UpdateMoney)
