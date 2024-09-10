@@ -42,15 +42,15 @@ type Buylotto struct {
 }
 
 func GetLotto(c *fiber.Ctx) error {
-	query := `SELECT Bid,Lid, Number, Period, Price FROM Lotto where Status = 0`
+	query := `SELECT Lid, Number, Period, Price FROM Lotto where Status = 0`
 	rows, err := db.Query(query)
 	if err != nil {
 		return err
 	}
-	var Lottos []GGLotto
+	var Lottos []Lotto
 	for rows.Next() {
-		var p GGLotto
-		err := rows.Scan(&p.Bid, &p.Lid, &p.Number, &p.Period, &p.Price)
+		var p Lotto
+		err := rows.Scan(&p.Lid, &p.Number, &p.Period, &p.Price)
 		if err != nil {
 			return c.Status(500).SendString(err.Error())
 		}
@@ -223,7 +223,7 @@ func BuyLotto(c *fiber.Ctx) error {
 
 func getBasketLotto(c *fiber.Ctx) error {
 	userid, _ := strconv.Atoi(c.Params("id"))
-	query := `SELECT basketlotto.Lid , Lotto.Number , Lotto.Period , Lotto.Price
+	query := `SELECT basketlotto.Bid,basketlotto.Lid , Lotto.Number , Lotto.Period , Lotto.Price
 			FROM basketlotto, Lotto, UserM
 			WHERE basketlotto.Lid = Lotto.Lid
 			AND basketlotto.UserM = UserM.UserM
@@ -233,10 +233,10 @@ func getBasketLotto(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	var Lottos []Lotto
+	var Lottos []GGLotto
 	for rows.Next() {
-		var p Lotto
-		err := rows.Scan(&p.Lid, &p.Number, &p.Period, &p.Price)
+		var p GGLotto
+		err := rows.Scan(&p.Bid, &p.Lid, &p.Number, &p.Period, &p.Price)
 		if err != nil {
 			return c.Status(500).SendString(err.Error())
 		}
