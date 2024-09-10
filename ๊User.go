@@ -48,8 +48,9 @@ type UserLogin struct {
 }
 
 type BuyLottos struct {
-	UserM int   `json:"UserM"`
-	Lid   []int `json:"Lid"`
+	UserM  int   `json:"UserM"`
+	Lid    []int `json:"Lid"`
+	Wallet int   `json:"Wallet"`
 }
 
 func GetUser(c *fiber.Ctx) error {
@@ -199,7 +200,12 @@ func Userbuylotto(c *fiber.Ctx) error {
 			return err
 		}
 	}
+	query := `UPDATE UserM SET Wallet= Wallet - ? WHERE UserM=?`
 
+	_, err := db.Exec(query, p.Wallet, p.UserM)
+	if err != nil {
+		return err
+	}
 	return c.JSON("Ok")
 }
 
