@@ -40,6 +40,7 @@ func main() {
 	app.Post("/user", PostUser)
 	app.Put("/user", UpdateUser)
 	app.Put("/userbylotto/:id", Userbuylotto)
+	app.Get("/lottouser/:id", GetUserLotto)
 
 	//Lotto
 	app.Get("/lotto", GetLotto)

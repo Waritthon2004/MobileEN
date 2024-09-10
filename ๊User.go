@@ -196,3 +196,30 @@ func CheckPassword(hashedPassword, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	return err == nil
 }
+
+func GetUserLotto(c *fiber.Ctx) error {
+	userid, _ := strconv.Atoi(c.Params("id"))
+	query := `SELECT Lotto.Lid , Lotto.Number ,Lotto.Period,Lotto.Price FROM basketlotto,Lotto WHERE basketlotto.Lid = Lotto.Lid and UserM = ? and basketlotto.Status = 1`
+
+	rows, err := db.Query(query, userid)
+	if err != nil {
+		return err
+	}
+	var Lottos []Lotto
+	for rows.Next() {
+		var p Lotto
+		err := rows.Scan(&p.Lid, &p.Number, &p.Period, &p.Price)
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+		Lottos = append(Lottos, p)
+	}
+
+	// Check for errors from iterating over rows
+	if err = rows.Err(); err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	// Send JSON response
+	return c.JSON(Lottos)
+}
