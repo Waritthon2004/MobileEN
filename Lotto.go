@@ -281,3 +281,25 @@ func getSerachLotto(c *fiber.Ctx) error {
 	// ส่งผลลัพธ์กลับเป็น JSON
 	return c.JSON(Lottos)
 }
+
+func NumberOneReward(c *fiber.Ctx) error {
+	query := `SELECT Lid, Number FROM Lotto WHERE Lid NOT IN (SELECT Lid FROM Reward) ORDER BY RAND() LIMIT 1;
+`
+	row := db.QueryRow(query)
+	var p Lotto
+	err := row.Scan(&p.Lid, &p.Number)
+	if err != nil {
+		return err
+	} else {
+		query = `INSERT INTO Reward(Number,Reward,Price) VALUES (?,?,?)`
+
+		_, err = db.Exec(query, p.Lid, 1, 6000000)
+
+		if err != nil {
+			return err
+		}
+
+		return c.JSON("Status : Ok")
+	}
+
+}

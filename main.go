@@ -39,8 +39,8 @@ func main() {
 	app.Post("/user/login", LoginUser)
 	app.Post("/user", PostUser)
 	app.Put("/user", UpdateUser)
-	app.Put("/userbylotto/:id", Userbuylotto)
-	app.Post("/lottouser", PostUserLotto)
+	app.Put("/userbylotto", Userbuylotto)
+	app.Post("/lottouser/:id", PostUserLotto)
 
 	//Lotto
 	app.Get("/lotto", GetLotto)
@@ -49,7 +49,7 @@ func main() {
 	app.Post("/lotto", PostLotto)
 	app.Delete("/lotto", DeleteLotto)
 	app.Delete("/reward", DeleteReward)
-	app.Post("/buylotto", BuyLotto)
+	app.Post("/buylottobasket", BuyLotto)
 	app.Get("/basketlotto/:id", getBasketLotto)
 	app.Get("/search/:id", getSerachLotto)
 

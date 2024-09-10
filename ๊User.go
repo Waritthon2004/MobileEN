@@ -47,6 +47,11 @@ type UserLogin struct {
 	Password string `json:"Password"`
 }
 
+type BuyLottos struct {
+	UserM int   `json:"UserM"`
+	Lid   []int `json:"Lid"`
+}
+
 func GetUser(c *fiber.Ctx) error {
 	rows, err := db.Query(`SELECT UserM, Name, Email, Password , Wallet FROM UserM`)
 	if err != nil {
@@ -172,21 +177,27 @@ func LoginUser(c *fiber.Ctx) error {
 }
 
 func Userbuylotto(c *fiber.Ctx) error {
-	//UserM, err := strconv.Atoi(c.Params("id"))
-	userid, _ := strconv.Atoi(c.Params("id"))
+	p := new(BuyLottos)
+	if err := c.BodyParser(p); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid input")
+	}
+	for i := 0; i < len(p.Lid); i++ {
+		query := `
+			UPDATE basketlotto
+			JOIN Lotto ON basketlotto.Lid = Lotto.Lid
+			JOIN UserM ON basketlotto.UserM = UserM.UserM
+			SET 
+				basketlotto.Status = 1,
+				Lotto.Status = 1
+			WHERE 
+				UserM.UserM = ?
+			and 
+				Lotto.Lid = ? `
 
-	query := `UPDATE basketlotto,Lotto,UserM 
-SET 
-    basketlotto.Status = 1,
-    Lotto.Status = 1
-WHERE 
-    basketlotto.UserM = UserM.UserM          
-    AND basketlotto.Lid = Lotto.Lid
-    AND UserM.UserM = ?`
-
-	_, err := db.Exec(query, userid)
-	if err != nil {
-		return err
+		_, err := db.Exec(query, p.UserM, p.Lid[i])
+		if err != nil {
+			return err
+		}
 	}
 
 	return c.JSON("Ok")
