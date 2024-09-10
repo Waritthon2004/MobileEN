@@ -58,7 +58,7 @@ func main() {
 	app.Get("/addrewardThree", NumberThreeReward)
 	app.Get("/addrewardFour", NumberFourReward)
 	app.Get("/addrewardFive", NumberFiveReward)
-
+	app.Delete("/deleteLotto/:bid", DeleteLottoBasket)
 	//Money
 	app.Put("/money", UpdateMoney)
 

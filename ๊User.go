@@ -240,3 +240,14 @@ func PostUserLotto(c *fiber.Ctx) error {
 	// Send JSON response
 	return c.JSON(Lottos)
 }
+
+func DeleteLottoBasket(c *fiber.Ctx) error {
+	bid, _ := strconv.Atoi(c.Params("bid"))
+	query := `DELETE FROM basketlotto WHERE bid = ?`
+	_, err := db.Exec(query, bid)
+	if err != nil {
+		return err
+	}
+
+	return c.SendStatus(fiber.StatusOK)
+}
