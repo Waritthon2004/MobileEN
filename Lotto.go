@@ -16,6 +16,9 @@ type Lotto struct {
 	Price  int    `json:"Price"`
 }
 
+type Amount struct {
+	amount int `json:"amount"`
+}
 type GGLotto struct {
 	Bid    int    `json:"Bid"`
 	Lid    int    `json:"Lid"`
@@ -295,10 +298,10 @@ func getSerachLotto(c *fiber.Ctx) error {
 	return c.JSON(Lottos)
 }
 func NumberOneReward(c *fiber.Ctx) error {
-	query := `SELECT LLid, Number, Reward, Price FROM Reward WHERE Reward = 1`
-	var x Reward
+	query := `SELECT COUNT(*) as amount FROM Reward WHERE Reward = 1`
+	var x Amount
 
-	err := db.QueryRow(query).Scan(&x.LLid, &x.Number, &x.Reward, &x.Price)
+	err := db.QueryRow(query).Scan(&x.amount)
 	if err != nil {
 		if err == sql.ErrNoRows {
 		} else {
@@ -306,9 +309,9 @@ func NumberOneReward(c *fiber.Ctx) error {
 		}
 	}
 
-	if x.LLid == 0 {
+	if x.amount == 0 {
 		// Query to select a random Lotto entry that is not in Reward
-		query = `SELECT Lid, Number FROM Lotto WHERE Lid NOT IN (SELECT Lid FROM Reward) ORDER BY RAND() LIMIT 1;`
+		query = `SELECT Lid, Number FROM Lotto WHERE Number NOT IN (SELECT Number FROM Reward) ORDER BY RAND() LIMIT 1;`
 		var p LottoReward
 
 		err = db.QueryRow(query).Scan(&p.Lid, &p.Number)
@@ -324,7 +327,8 @@ func NumberOneReward(c *fiber.Ctx) error {
 		}
 
 		// Return success status
-		return c.JSON(fiber.Map{"status": "ok"})
+		return c.JSON(fiber.Map{"status": "ok",
+			"Number": p.Number})
 	}
 
 	// If LLid is not 0, return a message indicating the reward exists
@@ -332,10 +336,10 @@ func NumberOneReward(c *fiber.Ctx) error {
 }
 
 func NumberTwoReward(c *fiber.Ctx) error {
-	query := `SELECT LLid, Number, Reward, Price FROM Reward WHERE Reward = 2`
-	var x Reward
+	query := `SELECT COUNT(*) as amount FROM Reward WHERE Reward = 2`
+	var x Amount
 
-	err := db.QueryRow(query).Scan(&x.LLid, &x.Number, &x.Reward, &x.Price)
+	err := db.QueryRow(query).Scan(&x.amount)
 	if err != nil {
 		if err == sql.ErrNoRows {
 		} else {
@@ -343,9 +347,9 @@ func NumberTwoReward(c *fiber.Ctx) error {
 		}
 	}
 
-	if x.LLid == 0 {
+	if x.amount == 0 {
 		// Query to select a random Lotto entry that is not in Reward
-		query = `SELECT Lid, Number FROM Lotto WHERE Lid NOT IN (SELECT Lid FROM Reward) ORDER BY RAND() LIMIT 1;`
+		query = `SELECT Lid, Number FROM Lotto WHERE Number NOT IN (SELECT Number FROM Reward) ORDER BY RAND() LIMIT 1;`
 		var p LottoReward
 
 		err = db.QueryRow(query).Scan(&p.Lid, &p.Number)
@@ -361,7 +365,8 @@ func NumberTwoReward(c *fiber.Ctx) error {
 		}
 
 		// Return success status
-		return c.JSON(fiber.Map{"status": "ok"})
+		return c.JSON(fiber.Map{"status": "ok",
+			"Number": p.Number})
 	}
 
 	// If LLid is not 0, return a message indicating the reward exists
@@ -369,10 +374,10 @@ func NumberTwoReward(c *fiber.Ctx) error {
 }
 
 func NumberThreeReward(c *fiber.Ctx) error {
-	query := `SELECT LLid, Number, Reward, Price FROM Reward WHERE Reward = 3`
-	var x Reward
+	query := `SELECT COUNT(*) as amount FROM Reward WHERE Reward = 3`
+	var x Amount
 
-	err := db.QueryRow(query).Scan(&x.LLid, &x.Number, &x.Reward, &x.Price)
+	err := db.QueryRow(query).Scan(&x.amount)
 	if err != nil {
 		if err == sql.ErrNoRows {
 		} else {
@@ -380,9 +385,9 @@ func NumberThreeReward(c *fiber.Ctx) error {
 		}
 	}
 
-	if x.LLid == 0 {
+	if x.amount == 0 {
 		// Query to select a random Lotto entry that is not in Reward
-		query = `SELECT Lid, Number FROM Lotto WHERE Lid NOT IN (SELECT Lid FROM Reward) ORDER BY RAND() LIMIT 1;`
+		query = `SELECT Lid, Number FROM Lotto WHERE Number NOT IN (SELECT Number FROM Reward) ORDER BY RAND() LIMIT 1;`
 		var p LottoReward
 
 		err = db.QueryRow(query).Scan(&p.Lid, &p.Number)
@@ -398,7 +403,8 @@ func NumberThreeReward(c *fiber.Ctx) error {
 		}
 
 		// Return success status
-		return c.JSON(fiber.Map{"status": "ok"})
+		return c.JSON(fiber.Map{"status": "ok",
+			"Number": p.Number})
 	}
 
 	// If LLid is not 0, return a message indicating the reward exists
@@ -408,18 +414,19 @@ func NumberThreeReward(c *fiber.Ctx) error {
 
 func NumberFourReward(c *fiber.Ctx) error {
 
-	query := `SELECT LLid, Number, Reward, Price FROM Reward WHERE Reward = 4`
-	var x Reward
+	query := `SELECT COUNT(*) as amount FROM Reward WHERE Reward = 4`
+	var x Amount
 
-	err := db.QueryRow(query).Scan(&x.LLid, &x.Number, &x.Reward, &x.Price)
+	err := db.QueryRow(query).Scan(&x.amount)
 	if err != nil {
 		if err == sql.ErrNoRows {
 		} else {
 			return err
 		}
 	}
-	if x.LLid == 0 {
-		query = `SELECT Lid, Number FROM Lotto WHERE Lid NOT IN (SELECT Lid FROM Reward) ORDER BY RAND() LIMIT 8;`
+
+	if x.amount == 0 {
+		query = `SELECT Lid, Number FROM Lotto WHERE Number NOT IN (SELECT Number FROM Reward) ORDER BY RAND() LIMIT 8;`
 		rows, err := db.Query(query)
 		if err != nil {
 			return err
@@ -443,24 +450,26 @@ func NumberFourReward(c *fiber.Ctx) error {
 			}
 
 		}
-		return c.JSON("Status : Ok")
+		return c.JSON(fiber.Map{"status": "ok",
+			"Number": Reswards})
 	}
 	return c.JSON(fiber.Map{"status": "have reward"})
 }
 
 func NumberFiveReward(c *fiber.Ctx) error {
-	query := `SELECT LLid, Number, Reward, Price FROM Reward WHERE Reward = 5`
-	var x Reward
+	query := `SELECT COUNT(*) as amount FROM Reward WHERE Reward = 5`
+	var x Amount
 
-	err := db.QueryRow(query).Scan(&x.LLid, &x.Number, &x.Reward, &x.Price)
+	err := db.QueryRow(query).Scan(&x.amount)
 	if err != nil {
 		if err == sql.ErrNoRows {
 		} else {
 			return err
 		}
 	}
-	if x.LLid == 0 {
-		query = `SELECT Lid, Number FROM Lotto WHERE Lid NOT IN (SELECT Lid FROM Reward) ORDER BY RAND() LIMIT 8;`
+
+	if x.amount == 0 {
+		query = `SELECT Lid, Number FROM Lotto WHERE Number NOT IN (SELECT Number FROM Reward) ORDER BY RAND() LIMIT 8;`
 		rows, err := db.Query(query)
 		if err != nil {
 			return err
@@ -484,7 +493,8 @@ func NumberFiveReward(c *fiber.Ctx) error {
 			}
 
 		}
-		return c.JSON("Status : Ok")
+		return c.JSON(fiber.Map{"status": "ok",
+			"Number": Reswards})
 	}
 	return c.JSON(fiber.Map{"status": "have reward"})
 }
