@@ -53,6 +53,15 @@ type BuyLottos struct {
 	Wallet int   `json:"Wallet"`
 }
 
+type UserchcekReward struct {
+	Lid         int    `json:"Lid"`
+	Price       int    `json:"Price"`
+	Number      string `json:"Number"`
+	Period      int    `json:"Period"`
+	Reward      int    `json:"Reward"`
+	Rewardprice int    `json:"Rewardprice"`
+}
+
 func GetUser(c *fiber.Ctx) error {
 	rows, err := db.Query(`SELECT UserM, Name, Email, Password , Wallet FROM UserM`)
 	if err != nil {
@@ -250,4 +259,31 @@ func DeleteLottoBasket(c *fiber.Ctx) error {
 	}
 
 	return c.SendStatus(fiber.StatusOK)
+}
+
+func UserCheckLotto(c *fiber.Ctx) error {
+	userid, _ := strconv.Atoi(c.Params("id"))
+	query := `SELECT Lotto.Lid, Lotto.Price , Lotto.Number,Lotto.Period,Reward.Reward,Reward.Price as Rewardprice FROM basketlotto,Reward,Lotto WHERE basketlotto.Lid = Lotto.Lid and Lotto.Number = Reward.Number and basketlotto.UserM = ? and basketlotto.Status = 1`
+
+	rows, err := db.Query(query, userid)
+	if err != nil {
+		return err
+	}
+	var Lottos []UserchcekReward
+	for rows.Next() {
+		var p UserchcekReward
+		err := rows.Scan(&p.Lid, &p.Price, &p.Number, &p.Period, &p.Reward, &p.Rewardprice)
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+		Lottos = append(Lottos, p)
+	}
+
+	// Check for errors from iterating over rows
+	if err = rows.Err(); err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	// Send JSON response
+	return c.JSON(Lottos)
 }
