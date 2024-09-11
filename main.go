@@ -64,6 +64,32 @@ func main() {
 	//Money
 	app.Put("/money", UpdateMoney)
 
+	app.Delete("/Reset", ResetLL)
+
 	// Start the server
 	log.Fatal(app.Listen(":3000"))
+}
+
+func ResetLL(c *fiber.Ctx) error {
+	query := `DELETE FROM basketlotto `
+	_, err := db.Exec(query)
+	if err != nil {
+		return err
+	}
+	query = `DELETE FROM Reward `
+	_, err = db.Exec(query)
+	if err != nil {
+		return err
+	}
+	query = `DELETE FROM UserM WHERE Type = 0 `
+	_, err = db.Exec(query)
+	if err != nil {
+		return err
+	}
+	query = `DELETE FROM Lotto `
+	_, err = db.Exec(query)
+	if err != nil {
+		return err
+	}
+	return c.SendStatus(fiber.StatusOK)
 }

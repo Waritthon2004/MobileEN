@@ -197,8 +197,8 @@ func Userbuylotto(c *fiber.Ctx) error {
 			JOIN Lotto ON basketlotto.Lid = Lotto.Lid
 			JOIN UserM ON basketlotto.UserM = UserM.UserM
 			SET 
-				basketlotto.Status = 1,
-				Lotto.Status = 1
+				basketlotto.Status = 2,
+				Lotto.Status = 2
 			WHERE 
 				UserM.UserM = ?
 			and 
@@ -229,7 +229,7 @@ func GUserLotto(c *fiber.Ctx) error {
 FROM basketlotto, Lotto 
 WHERE basketlotto.Lid = Lotto.Lid 
   AND basketlotto.UserM = ?
-  AND basketlotto.Status = 1 
+  AND basketlotto.Status = 2
   AND Lotto.Number NOT IN (SELECT Number FROM Reward);
 `
 
@@ -269,7 +269,7 @@ func DeleteLottoBasket(c *fiber.Ctx) error {
 
 func UserCheckLotto(c *fiber.Ctx) error {
 	userid, _ := strconv.Atoi(c.Params("id"))
-	query := `SELECT Lotto.Lid, Lotto.Price , Lotto.Number,Lotto.Period,Reward.Reward,Reward.Price as Rewardprice FROM basketlotto,Reward,Lotto WHERE basketlotto.Lid = Lotto.Lid and Lotto.Number = Reward.Number and basketlotto.UserM = ? and basketlotto.Status = 1`
+	query := `SELECT Lotto.Lid, Lotto.Price , Lotto.Number,Lotto.Period,Reward.Reward,Reward.Price as Rewardprice FROM basketlotto,Reward,Lotto WHERE basketlotto.Lid = Lotto.Lid and Lotto.Number = Reward.Number and basketlotto.UserM = ? and basketlotto.Status = 2`
 
 	rows, err := db.Query(query, userid)
 	if err != nil {
