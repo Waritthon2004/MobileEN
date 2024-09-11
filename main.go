@@ -53,6 +53,7 @@ func main() {
 	app.Get("/basketlotto/:id", getBasketLotto)
 	app.Get("/search/:id", getSerachLotto)
 	app.Get("/addreward", randomNumberLottoReward)
+	app.Get("/addrewarduserbuy", randomRewardLottobuy)
 
 	app.Get("/addrewardOne", NumberOneReward)
 	app.Get("/addrewardTwo", NumberTwoReward)

@@ -484,3 +484,70 @@ func NumberFiveReward(c *fiber.Ctx) error {
 	}
 	return c.JSON(fiber.Map{"status": "have reward"})
 }
+
+func randomRewardLottobuy(c *fiber.Ctx) error {
+	query := `SELECT Lid , Number FROM Lotto Where Lid IN (SELECT Lid FROM basketlotto WHERE basketlotto.Status = 1) ORDER BY RAND() LIMIT 19`
+	rows, err := db.Query(query)
+	if err != nil {
+		return err
+	}
+	var Reswards []LottoReward
+
+	for rows.Next() {
+		var p LottoReward
+		err := rows.Scan(&p.Lid, &p.Number)
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+		Reswards = append(Reswards, p)
+	}
+	if len(Reswards) != 19 {
+		var x = 19 - len(Reswards)
+		query = `SELECT Lid , Number FROM Lotto ORDER BY RAND() LIMIT ?`
+		rows, err = db.Query(query, x)
+		for rows.Next() {
+			var p LottoReward
+			err := rows.Scan(&p.Lid, &p.Number)
+			if err != nil {
+				return c.Status(500).SendString(err.Error())
+			}
+			Reswards = append(Reswards, p)
+		}
+	}
+	i := 0
+	for _, reward := range Reswards {
+		query := `INSERT INTO Reward(Number,Reward,Price) VALUES (?,?,?)`
+
+		if i == 0 {
+			_, err := db.Exec(query, reward.Number, 1, 6000000)
+			if err != nil {
+				return err
+			}
+		} else if i == 1 {
+			_, err := db.Exec(query, reward.Number, 2, 200000)
+			if err != nil {
+				return err
+			}
+		} else if i == 2 {
+			_, err := db.Exec(query, reward.Number, 3, 80000)
+			if err != nil {
+				return err
+			}
+		} else if i > 2 && i <= 10 {
+			_, err := db.Exec(query, reward.Number, 4, 40000)
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err := db.Exec(query, reward.Number, 5, 20000)
+			if err != nil {
+				return err
+			}
+		}
+		i++
+
+	}
+
+	// ใช้ Reswards1, Reswards2, Reswards3 ในการตอบสนอง
+	return c.JSON("Status : Ok")
+}
