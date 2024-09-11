@@ -216,7 +216,11 @@ func BuyLotto(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-
+	query = `UPDATE Lotto SET Status=1`
+	_, err = db.Exec(query, p.Status)
+	if err != nil {
+		return err
+	}
 	return c.JSON("Status : Ok")
 
 }
