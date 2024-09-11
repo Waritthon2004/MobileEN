@@ -216,8 +216,8 @@ func BuyLotto(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	query = `UPDATE Lotto SET Status=1`
-	_, err = db.Exec(query)
+	query = `UPDATE Lotto SET Status=1 where Lid = ?`
+	_, err = db.Exec(query, p.Lid)
 	if err != nil {
 		return err
 	}
@@ -490,7 +490,7 @@ func NumberFiveReward(c *fiber.Ctx) error {
 }
 
 func randomRewardLottobuy(c *fiber.Ctx) error {
-	query := `SELECT Lid , Number FROM Lotto Where Lid IN (SELECT Lid FROM basketlotto WHERE basketlotto.Status = 1) ORDER BY RAND() LIMIT 19`
+	query := `SELECT Lid , Number FROM Lotto Where Lid IN (SELECT Lid FROM basketlotto WHERE basketlotto.Status = 2) ORDER BY RAND() LIMIT 19`
 	rows, err := db.Query(query)
 	if err != nil {
 		return err
