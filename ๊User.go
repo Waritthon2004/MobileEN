@@ -225,7 +225,13 @@ func CheckPassword(hashedPassword, password string) bool {
 
 func GUserLotto(c *fiber.Ctx) error {
 	userid, _ := strconv.Atoi(c.Params("id"))
-	query := `SELECT Lotto.Lid , Lotto.Number ,Lotto.Period,Lotto.Price FROM basketlotto,Lotto WHERE basketlotto.Lid = Lotto.Lid and UserM = ? and basketlotto.Status = 1`
+	query := `SELECT Lotto.Lid, Lotto.Number, Lotto.Period, Lotto.Price 
+FROM basketlotto, Lotto 
+WHERE basketlotto.Lid = Lotto.Lid 
+  AND basketlotto.UserM = ?
+  AND basketlotto.Status = 1 
+  AND Lotto.Number NOT IN (SELECT Number FROM Reward);
+`
 
 	rows, err := db.Query(query, userid)
 	if err != nil {
