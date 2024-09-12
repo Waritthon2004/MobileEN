@@ -563,5 +563,5 @@ func randomRewardLottobuy(c *fiber.Ctx) error {
 	}
 
 	// ใช้ Reswards1, Reswards2, Reswards3 ในการตอบสนอง
-	return c.JSON("Status : Ok")
+	return c.JSON("number : Ok")
 }
