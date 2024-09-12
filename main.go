@@ -42,7 +42,7 @@ func main() {
 	app.Put("/userbylotto", Userbuylotto)
 	app.Get("/lottouser/:id", GUserLotto)
 	app.Get("/userchecklotto/:id", UserCheckLotto)
-	app.Get("/updatestatusreward/:id", UpdateStatus)
+	app.Get("/updatestatusreward/:bid", UpdateStatus)
 
 	//Lotto
 	app.Get("/lotto", GetLotto)

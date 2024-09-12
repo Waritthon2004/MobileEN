@@ -32,7 +32,7 @@ func UpdateStatus(c *fiber.Ctx) error {
 
 	bid, _ := strconv.Atoi(c.Params("bid"))
 
-	query := `UPDATE basketlotto SET Status= 3 WHERE Bid=?`
+	query := `UPDATE basketlotto SET Status = 3 WHERE Bid=?`
 
 	_, err := db.Exec(query, bid)
 	if err != nil {
