@@ -288,9 +288,13 @@ func UserCheckLotto(c *fiber.Ctx) error {
 
 	// Check for errors from iterating over rows
 	if err = rows.Err(); err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
 
+		return c.Status(500).SendString(err.Error())
+
+	}
+	if Lottos == nil {
+		return c.JSON("Status : notOk")
+	}
 	// Send JSON response
 	return c.JSON(Lottos)
 }
