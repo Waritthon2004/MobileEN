@@ -292,9 +292,7 @@ func UserCheckLotto(c *fiber.Ctx) error {
 		return c.Status(500).SendString(err.Error())
 
 	}
-	if Lottos == nil {
-		return c.JSON("number : notOk")
-	}
+
 	// Send JSON response
 	return c.JSON(Lottos)
 }
