@@ -1,6 +1,10 @@
 package main
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"strconv"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 type Moneyadd struct {
 	UserM  int `json:"UserM"`
@@ -22,4 +26,18 @@ func UpdateMoney(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(p)
+}
+
+func UpdateStatus(c *fiber.Ctx) error {
+
+	bid, _ := strconv.Atoi(c.Params("bid"))
+
+	query := `UPDATE basketlotto SET Status= 3 WHERE Bid=?`
+
+	_, err := db.Exec(query, bid)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON("Ok")
 }

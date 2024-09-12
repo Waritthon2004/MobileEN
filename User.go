@@ -54,6 +54,7 @@ type BuyLottos struct {
 }
 
 type UserchcekReward struct {
+	Bid         int    `json:"Bid"`
 	Lid         int    `json:"Lid"`
 	Price       int    `json:"Price"`
 	Number      string `json:"Number"`
@@ -269,7 +270,7 @@ func DeleteLottoBasket(c *fiber.Ctx) error {
 
 func UserCheckLotto(c *fiber.Ctx) error {
 	userid, _ := strconv.Atoi(c.Params("id"))
-	query := `SELECT Lotto.Lid, Lotto.Price , Lotto.Number,Lotto.Period,Reward.Reward,Reward.Price as Rewardprice FROM basketlotto,Reward,Lotto WHERE basketlotto.Lid = Lotto.Lid and Lotto.Number = Reward.Number and basketlotto.UserM = ? and basketlotto.Status = 2`
+	query := `SELECT Bid , Lotto.Lid, Lotto.Price , Lotto.Number,Lotto.Period,Reward.Reward,Reward.Price as Rewardprice FROM basketlotto,Reward,Lotto WHERE basketlotto.Lid = Lotto.Lid and Lotto.Number = Reward.Number and basketlotto.UserM = ? and basketlotto.Status = 2`
 
 	rows, err := db.Query(query, userid)
 	if err != nil {
@@ -278,7 +279,7 @@ func UserCheckLotto(c *fiber.Ctx) error {
 	var Lottos []UserchcekReward
 	for rows.Next() {
 		var p UserchcekReward
-		err := rows.Scan(&p.Lid, &p.Price, &p.Number, &p.Period, &p.Reward, &p.Rewardprice)
+		err := rows.Scan(&p.Bid, &p.Lid, &p.Price, &p.Number, &p.Period, &p.Reward, &p.Rewardprice)
 		if err != nil {
 			return c.Status(500).SendString(err.Error())
 		}
