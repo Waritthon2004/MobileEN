@@ -215,7 +215,7 @@ func BuyLotto(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid input")
 	}
 	var x Amount
-	query := `SELECT COUNT(*) as amount FROM basketlotto,Lotto WHERE basketlotto.Lid = Lotto.Lid and Lotto.Lid = ? `
+	query := `SELECT COUNT(*) as amount FROM basketlotto,Lotto WHERE basketlotto.Lid = Lotto.Lid and basketlotto.Lid = ? `
 	_, err := db.Exec(query, x.amount)
 	if err != nil {
 		return err
