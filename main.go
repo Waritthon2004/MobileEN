@@ -13,7 +13,7 @@ var db *sql.DB
 
 func main() {
 	// Database connection string
-	dsn := "web66_65011212075:65011212075@csmsu@tcp(202.28.34.197:3306)/web66_65011212075"
+	dsn := "aemandko_Tinchai:Tinchai@tcp(119.59.96.110:3306)/aemandko_Tinchai"
 
 	// Connect to the database
 	var err error
