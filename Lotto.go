@@ -214,17 +214,27 @@ func BuyLotto(c *fiber.Ctx) error {
 	if err := c.BodyParser(p); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid input")
 	}
-	query := `INSERT INTO basketlotto(Lid,UserM, Status) VALUES (?,?,?)`
-	_, err := db.Exec(query, p.Lid, p.UserM, p.Status)
+	var x Amount
+	query := `SELECT COUNT(*) as amount FROM basketlotto,Lotto WHERE basketlotto.Lid = Lotto.Lid and Lotto.Lid = ? `
+	_, err := db.Exec(query, x.amount)
 	if err != nil {
 		return err
 	}
-	query = `UPDATE Lotto SET Status=1 where Lid = ?`
-	_, err = db.Exec(query, p.Lid)
-	if err != nil {
-		return err
+	if x.amount == 0 {
+		query = `INSERT INTO basketlotto(Lid,UserM, Status) VALUES (?,?,?)`
+		_, err = db.Exec(query, p.Lid, p.UserM, p.Status)
+		if err != nil {
+			return err
+		}
+		query = `UPDATE Lotto SET Status=1 where Lid = ?`
+		_, err = db.Exec(query, p.Lid)
+		if err != nil {
+			return err
+		}
+		return c.JSON("Status : Ok")
 	}
-	return c.JSON("Status : Ok")
+
+	return c.JSON("Status : have user buy or select")
 
 }
 
@@ -268,7 +278,7 @@ func getSerachLotto(c *fiber.Ctx) error {
 	}
 
 	// ใช้คำสั่ง SQL สำหรับค้นหาหมายเลขล็อตเตอรี่ที่ขึ้นต้นด้วยพารามิเตอร์ id
-	query := `SELECT Lid, Number, Period, Price FROM Lotto WHERE Number LIKE ?`
+	query := `SELECT Lid, Number, Period, Price FROM Lotto WHERE Number LIKE ? and Status = 0 `
 	searchPattern := Lottonumber + "%"
 
 	// รันคำสั่ง SQL พร้อมพารามิเตอร์ค้นหา
