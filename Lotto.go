@@ -216,7 +216,7 @@ func BuyLotto(c *fiber.Ctx) error {
 	}
 	var x Amount
 	query := `SELECT COUNT(*) as amount FROM basketlotto,Lotto WHERE basketlotto.Lid = Lotto.Lid and basketlotto.Lid = ? `
-	_, err := db.Exec(query, x.amount)
+	_, err := db.Exec(query, p.Lid)
 	if err != nil {
 		return err
 	}
