@@ -232,7 +232,7 @@ func BuyLotto(c *fiber.Ctx) error {
 		return c.JSON("Status : Ok")
 	}
 
-	return c.JSON("Status : have user buy or select")
+	return c.JSON(fiber.Map{"status": "have user buy or select"})
 
 }
 
