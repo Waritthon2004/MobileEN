@@ -215,14 +215,12 @@ func BuyLotto(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid input")
 	}
 	var x Amount
-	query := `SELECT COUNT(*) as amount FROM basketlotto,Lotto WHERE basketlotto.Lid = Lotto.Lid and basketlotto.Lid = ? `
-	_, err := db.Exec(query, p.Lid)
-	if err != nil {
-		return err
-	}
+	query := `SELECT COUNT(*) as amount FROM basketlotto WHERE  basketlotto.Lid = ? `
+	rows := db.QueryRow(query, p.Lid)
+	rows.Scan(&x.amount)
 	if x.amount == 0 {
 		query = `INSERT INTO basketlotto(Lid,UserM, Status) VALUES (?,?,?)`
-		_, err = db.Exec(query, p.Lid, p.UserM, p.Status)
+		_, err := db.Exec(query, p.Lid, p.UserM, p.Status)
 		if err != nil {
 			return err
 		}
